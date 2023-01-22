@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Done</title>
+    <style>
+      @import url(https://ministyles.astolfo.gay/background+inter-font-by-default.css);
+      .center {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        font-family: Inter, Robotto, 'Segoe UI', Tahoma, Geneva, Verdana,
+          sans-serif;
+        text-align: center;
+      }
+      html,
+      body {
+        background: #24273a !important;
+        color: #cad3f5 !important;
+      }
+    </style>
+    <script>
+      window.copy = async () => {
+        const urlsp = new URLSearchParams(document.location.search);
+        await navigator.clipboard.writeText(urlsp.get('authorization'));
+        alert('Copied!');
+      };
+    </script>
+  </head>
+  <body>
+    <div class="center">
+      <div>
+        <h2>Copy Token</h2>
+        <p>
+          Click
+          <a style="color: #aaddff; cursor: pointer" href="javascript:copy();"
+            >here</a
+          >
+          to copy the token to your clipboard.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

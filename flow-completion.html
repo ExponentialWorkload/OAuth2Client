@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Flow Completion</title>
+    <script defer>
+      const run = async () => {
+        const status = document.querySelector('#status');
+        status.innerHTML = 'Checking Parameters';
+        if (!localStorage.getItem('client_id')) {
+          status.innerHTML =
+            'Failed to find client_id!<br/>Please visit your app & try again.';
+          setTimeout(() => {
+            location = '/init-flow';
+          }, 2e3);
+          throw new Error('failed client_id');
+        }
+        if (!localStorage.getItem('redirect_uri')) {
+          status.innerHTML =
+            'Failed to find redirect_uri!<br/>Please visit your app & try again.';
+          setTimeout(() => {
+            location = '/init-flow';
+          }, 2e3);
+          throw new Error('failed redir uri');
+        }
+        if (!localStorage.getItem('final_uri')) {
+          status.innerHTML =
+            'Failed to find final_uri!<br/>Please visit your app & try again.';
+          setTimeout(() => {
+            location = '/init-flow';
+          }, 2e3);
+          throw new Error('failed final uri');
+        }
+        const urlsp = new URLSearchParams(document.location.hash.substring(1));
+        status.innerHTML = 'Saving Data';
+        const scope = localStorage.getItem('scope');
+        const clientId = localStorage.getItem('client_id');
+        const expires = new Date(Date.now() + Number(urlsp.get('expires_in')));
+        localStorage.setItem(`${clientId}_tokenType`, urlsp.get('token_type'));
+        localStorage.setItem(`${clientId}_token`, urlsp.get('access_token'));
+        localStorage.setItem(`${clientId}_expiresIn`, urlsp.get('expires_in'));
+        localStorage.setItem(`${clientId}_scope`, scope);
+        localStorage.setItem(`${clientId}_expiresAt`, expires.toISOString());
+        localStorage.setItem(`${clientId}_scope`, urlsp.get('scope'));
+        localStorage.removeItem('state');
+        window.visit = () => {
+          if (Date.now() > expires.getTime() - 20000) {
+            status.innerHTML =
+              'You took too long.<br/>Token has expired.<br/>You will be sent to try again in 3 seconds.';
+            setTimeout(() => {
+              status.innerHTML =
+                'You took too long.<br/>Token has expired.<br/>You will be sent to try again in 2 seconds.';
+            }, 1e3);
+            setTimeout(() => {
+              status.innerHTML =
+                'You took too long.<br/>Token has expired.<br/>You will be sent to try again in 1 second.';
+            }, 2e3);
+            setTimeout(() => {
+              status.innerHTML =
+                'You took too long.<br/>Token has expired.<br/>Please try again. You are being redirected.';
+              location = '/init-flow';
+            }, 3e3);
+            throw new Error('failed redir uri');
+          }
+          const tokenType = encodeURIComponent(urlsp.get('token_type'));
+          const token = encodeURIComponent(urlsp.get('access_token'));
+          const final = `${localStorage.getItem(
+            'final_uri',
+          )}clientId=${clientId}&tokenType=${tokenType}&access_token=${token}&authorization=${tokenType}%20${token}&expries=${encodeURIComponent(
+            localStorage.getItem(`${clientId}_expiresAt`),
+          )}&scope=${encodeURIComponent(scope)}`;
+          localStorage.removeItem('final_uri');
+          location.replace(final);
+        };
+        let hostname = 'Unknown';
+        try {
+          const uri = new URI(localStorage.getItem('final_uri'));
+          hostname = uri.host ?? uri.hostname ?? hostname;
+        } catch (e) {}
+        status.innerHTML = 'Checking Auth';
+        let userInfo;
+        if (scope?.includes('identify')) {
+          try {
+            userInfo = await fetch('https://discord.com/api/v10/users/@me', {
+              headers: {
+                Authorization: `${urlsp.get('token_type')} ${urlsp.get(
+                  'access_token',
+                )}`,
+              },
+            }).then(v => v.json());
+          } catch (error) {}
+        }
+        status.innerHTML = `Click <a style="color:#ffaaaa; cursor: pointer;" onclick="visit()">here</a> to authorize with ${hostname}.<br/>If clicked, you will visit their site & they will have access to any scopes authorized on the previous page.<br/><br/><span style="color: #cad3f577">In theory, access should expire on/at/near ${new Date(
+          localStorage.getItem(`${clientId}_expiresAt`),
+        ).toString()}${
+          userInfo
+            ? `<hr style="background: transparent; border-top-color: #0000; border-bottom-color: #ccca; border-left: none; border-right: none;"/>Logged in as ${userInfo.username}#${userInfo.discriminator} (${userInfo.id}) - <a style="color:#99aaff; cursor: pointer;" href="/init-flow">Try Again</a>`
+            : ''
+        }</span>`;
+      };
+      let i;
+      i = setInterval(() => {
+        if (document.querySelector('#status')) {
+          clearInterval(i);
+          run();
+        }
+      }, 100);
+    </script>
+    <style>
+      @import url(https://ministyles.astolfo.gay/background+inter-font-by-default.css);
+      .center {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        font-family: Inter, Robotto, 'Segoe UI', Tahoma, Geneva, Verdana,
+          sans-serif;
+        text-align: center;
+      }
+      html,
+      body {
+        background: #24273a !important;
+        color: #cad3f5 !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="center">
+      <p id="status">Loading Page</p>
+    </div>
+  </body>
+</html>

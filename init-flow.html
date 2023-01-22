@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Init Auth Flow</title>
+    <script>
+      const urlsp = new URLSearchParams(
+        document.location.hash?.substring(1) ?? document.location.query,
+      );
+      const clientId =
+        urlsp.get('clientId') ??
+        localStorage.getItem('client_id') ??
+        '1058597334428160020'; // remove everything after & including the `??` to have no default
+      const redirectUri = `${location.protocol}//${
+        location.host ?? location.hostname
+      }/flow-completion`; // change this if you want a different redirect uri!
+      const scope =
+        urlsp.get('scope') ?? localStorage.getItem('scope') ?? 'identify';
+      if (!clientId) {
+        alert('no client id!!! please make sure you visited the right url!!!');
+        throw new Error('no client id');
+      }
+      if (!redirectUri) {
+        alert(
+          'no redirectUri!!! please make sure you visited the right url!!!',
+        );
+        throw new Error('no redirectUri');
+      }
+      const authBase = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&response_type=token&scope=${scope}&redirect_uri=${encodeURIComponent(
+        redirectUri,
+      )}`;
+      localStorage.setItem('scope', scope);
+      localStorage.setItem('client_id', clientId);
+      localStorage.setItem('redirect_uri', redirectUri);
+      localStorage.setItem(
+        'final_uri',
+        urlsp.get('redirect_uri') ??
+          localStorage.getItem('final_uri') ??
+          '/done?',
+      );
+      console.log(authBase);
+      location.replace(authBase);
+    </script>
+    <style>
+      @import url(https://ministyles.astolfo.gay/background+inter-font-by-default.css);
+      .center {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        font-family: Inter, Robotto, 'Segoe UI', Tahoma, Geneva, Verdana,
+          sans-serif;
+      }
+      html,
+      body {
+        background: #24273a !important;
+        color: #cad3f5 !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="center">
+      <noscript>(this wont work without js)<br /></noscript>
+      Redirecting...
+    </div>
+  </body>
+</html>
