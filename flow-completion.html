@@ -73,7 +73,7 @@
         };
         let hostname = 'Unknown';
         try {
-          const uri = new URI(localStorage.getItem('final_uri'));
+          const uri = new URL(localStorage.getItem('final_uri'));
           hostname = uri.host ?? uri.hostname ?? hostname;
         } catch (e) {}
         status.innerHTML = 'Checking Auth';
