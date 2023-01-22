@@ -15,3 +15,7 @@ Example final URL: `https://discord.oauth2.変態.wtf/init-flow#redirect_uri=htt
 
 ## questions
 is this secure? not really, i threw it together in like 10 minutes - it's good enough if all you need is say `identify` i guess though
+
+## example flow
+
+[https://discord.oauth2.xn--urs05q.wtf/init-flow#redirect_uri=https://discord.oauth2.%E5%A4%89%E6%85%8B.wtf/copy%3f&client_id=1058597334428160020&scope=identify](https://discord.oauth2.xn--urs05q.wtf/init-flow#redirect_uri=https://discord.oauth2.%E5%A4%89%E6%85%8B.wtf/copy%3f&client_id=1058597334428160020&scope=identify)
