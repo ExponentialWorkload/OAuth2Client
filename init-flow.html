@@ -36,7 +36,9 @@
       localStorage.setItem('redirect_uri', redirectUri);
       localStorage.setItem(
         'final_uri',
-        urlsp.get('redirect_uri') ??
+        (urlsp.get('redirect_uri')
+          ? decodeURIComponent(urlsp.get('redirect_uri'))
+          : null) ??
           localStorage.getItem('final_uri') ??
           '/done?',
       );
