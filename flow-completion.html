@@ -100,7 +100,7 @@
         while (!punycode)
           await new Promise(resolve => setTimeout(resolve, 500));
         document.querySelector('#hostname').textContent =
-          punycode.decode(hostname);
+          punycode.toUnicode(hostname);
       };
       let i;
       i = setInterval(() => {
