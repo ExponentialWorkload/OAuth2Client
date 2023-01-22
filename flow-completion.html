@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>Flow Completion</title>
+    <script src="/punycode.js"></script>
     <script defer>
       const run = async () => {
         const status = document.querySelector('#status');
@@ -89,13 +90,17 @@
             }).then(v => v.json());
           } catch (error) {}
         }
-        status.innerHTML = `Click <a style="color:#ffaaaa; cursor: pointer;" onclick="visit()">here</a> to authorize with ${hostname}.<br/>If clicked, you will visit their site & they will have access to any scopes authorized on the previous page.<br/><br/><span style="color: #cad3f577">In theory, access should expire on/at/near ${new Date(
+        status.innerHTML = `Click <a style="color:#ffaaaa; cursor: pointer;" onclick="visit()">here</a> to authorize with <span id="hostname">${hostname}</span>.<br/>If clicked, you will visit their site & they will have access to any scopes authorized on the previous page.<br/><br/><span style="color: #cad3f577">In theory, access should expire on/at/near ${new Date(
           localStorage.getItem(`${clientId}_expiresAt`),
         ).toString()}${
           userInfo
             ? `<hr style="background: transparent; border-top-color: #0000; border-bottom-color: #ccca; border-left: none; border-right: none;"/>Logged in as ${userInfo.username}#${userInfo.discriminator} (${userInfo.id}) - <a style="color:#99aaff; cursor: pointer;" href="/init-flow">Try Again</a>`
             : ''
         }</span>`;
+        while (!punycode)
+          await new Promise(resolve => setTimeout(resolve, 500));
+        document.querySelector('#hostname').textContent =
+          punycode.decode(hostname);
       };
       let i;
       i = setInterval(() => {
